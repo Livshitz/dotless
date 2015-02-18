@@ -71,6 +71,15 @@
         void FileDeletedHandler(object sender, FileSystemEventArgs e)
         {
             var fsWatcher = sender as FileSystemWatcher;
+
+			// Some editors (VS2012+) delete and re-create the file on edit
+			Thread.Sleep(500);
+			if (File.Exists(e.FullPath))
+			{
+				FileChangedHandler(sender, e);
+				return;
+			}
+
             fsWatcher.EnableRaisingEvents = false;
             Console.WriteLine("Stopped watching '{0}'", e.FullPath);
             FileSystemWatchers.Remove(fsWatcher);
